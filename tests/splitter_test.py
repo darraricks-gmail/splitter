@@ -25,12 +25,11 @@ def empty_existing_target_files():
 
 
 
-# @pytest.mark.parametrize("input_file_name", ["large_1M_events.log",
-#                                        "test_empty_file",
-#                                        "test_image.jpg",
-#                                        "test_image.png", "test_image.pdf", "test_random_char_lines.txt",
-#                                        "test_three_line_small_file.txt"])
-@pytest.mark.parametrize("input_file_name", [        "test_image.pdf"])
+@pytest.mark.parametrize("input_file_name", ["large_1M_events.log",
+                                       "test_empty_file",
+                                       "test_image.jpg",
+                                       "test_image.png", "test_image.pdf", "test_random_char_lines.txt",
+                                       "test_three_line_small_file.txt"])
 def test_agent_splitter_and_target_file_stores(input_file_name,test_run_timestamp):
     """
     Verify file is processed correctly by verifying the counts of each byte value in the file then compare the count of these
