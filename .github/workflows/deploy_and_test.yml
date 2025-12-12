@@ -1,13 +1,11 @@
 
 name: Deploy and Test Splitter
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
+  # Triggers the workflow on push or pull request events but only for the "main" branch so each version of the application is tested
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
@@ -49,6 +47,7 @@ jobs:
   deploy_report:
     needs: deploy_test
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     environment:
       name: test-report
       url: ${{ steps.deploy_page.outputs.page_url }}
