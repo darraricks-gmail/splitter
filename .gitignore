@@ -1,0 +1,3 @@
+test_artifacts/*
+#keep this placeholder file
+!test_artifacts/.gitkeep

@@ -1,0 +1,42 @@
+services:
+  agent:
+    build:
+      context: .
+      dockerfile: ./app/agent/Dockerfile
+    volumes:
+      - ./ingestion_io/input_files:/app/agent/inputs
+      - ./ingestion_io/input_monitor_file_path.json:/app/agent/inputs.json
+    depends_on:
+      - splitter
+  splitter:
+    build:
+      context: .
+      dockerfile: ./app/splitter/Dockerfile
+    depends_on:
+      - target_1
+      - target_2
+  target_1:
+    build:
+      context: .
+      dockerfile: ./app/target/Dockerfile
+    volumes:
+      - ./ingestion_io/output_split_data/target_1/events.log:/events.log
+  target_2:
+    build:
+        context: .
+        dockerfile: ./app/target/Dockerfile
+    volumes:
+      - ./ingestion_io/output_split_data/target_2/events.log:/events.log
+  tests:
+    build:
+      context: .
+      dockerfile: ./tests/Dockerfile
+    depends_on:
+      - agent
+      - splitter
+      - target_1
+      - target_2
+    volumes:
+      - ./ingestion_io:/ingestion_io
+      - ./test_artifacts:/test_artifacts:rw
+      - /var/run/docker.sock:/var/run/docker.sock
