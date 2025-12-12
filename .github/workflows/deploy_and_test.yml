@@ -61,9 +61,5 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deploy_page
         uses: actions/deploy-pages@v4.0.5
-
-   
-    #   steps:
-    #     - name: Deploy to GitHub Pages
-    #       id: deployment
-    #       uses: actions/deploy-pages@v4
+        with:
+         artifact_name: test-report
