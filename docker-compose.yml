@@ -1,17 +1,17 @@
 services:
   agent:
     build:
-      context: .
-      dockerfile: ./app/agent/Dockerfile
+      context: ./app
+      dockerfile: ./agent/Dockerfile
     volumes:
-      - ./ingestion_io/input_files:/app/agent/inputs
-      - ./ingestion_io/input_monitor_file_path.json:/app/agent/inputs.json
+      - ./ingestion_io/input_files:/agent/inputs
+      - ./ingestion_io/input_monitor_file_path.json:/agent/inputs.json
     depends_on:
       - splitter
   splitter:
     build:
-      context: .
-      dockerfile: ./app/splitter/Dockerfile
+      context: ./app
+      dockerfile: ./splitter/Dockerfile
     depends_on:
       - target_1
       - target_2

@@ -1,5 +1,5 @@
 FROM node:18-alpine
-COPY ./app/app.* ./app/splitter/
-COPY ./app/splitter/ ./app/splitter/
+COPY ./app.* ./splitter/
+COPY ./splitter/ ./splitter/
 EXPOSE 9997
-CMD ["node", "./app/splitter/app.js","./app/splitter"]
+CMD ["node", "./splitter/app.js","./splitter"]

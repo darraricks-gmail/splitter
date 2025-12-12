@@ -1,6 +1,136 @@
 
 Prerequisites
 
+
+
+
+
+This repo contains a test setup to verify data is processed sufficiently via the following application
+
+1.Agent - Reads from a specified file and forwards the contents to a ‘Splitter’
+2. Splitter - Receives data from an ‘Agent’ and randomly splits the data
+between the two configured ‘Target’ hosts
+3. Target - Receives data from a ‘Splitter’ and writes it to a file on disk
+
+The application will be hosted in docker each service Agent, Splitter and 2 Targets run in an individual docker container.  A test
+container will also be deployed with the application
+
+Project Highlights:  
+-  Agent is driven test harness using a volume that is shared across application containers to iterate through any set of data scenarios given a file set
+(include file structure explanation)
+- Each test case is associated with specific data file covering a different expectation
+- CI: GH Actions Pull Request Check Test automatically run upon changes to main branch to ensure 
+- Target Host Artifacts timestamped and stored for reference of test run (locally, gh actons)
+- shows bytes character counts compared in test verification in file 
+- Published test report to GH pages after each run triggered by a change to main branch
+
+
+## Prerequisites 
+
+To run this project locally, ensure docker and docker compose are installed on your machine to build and deploy application
+containers 
+
+To verify docker installation: 
+docker --version
+To verify docker compose installation: 
+docker compose version
+
+If you find that docker is not installed you can download an installation file for Docker Desktop here https://www.docker.com/products/docker-desktop/
+Once installed , repeat the verification steps
+
+
+Deploying Application and Test Containers
+Verify that the Docker daemon has started.  To do this either make sure your Docker Desktop app is launched
+
+Once you have docker running:
+To Build and Deploy Splitter App and Test container run:
+At the root of the project directory run, you will see a docker-compose.yml file in this directory run:
+docker compose up --build -d
+
+To Run Test Suite: 
+run the following also in the root directory:
+docker compose exec tests pytest -v
+after tests are complete you can retrieve the test artifacts in the /test_artifacts directory artifact details 
+
+Tear Down Application and Test Containers
+docker compose down  
+
+Troubleshooting:
+On rare occasion after many docker builds and deploys you might start to see various file not found errors in the test logs if this starts to occur
+consistently try tearing down the deployment container along with deleting the volumes as well, just remember all data associated with them will be wiped:
+docker compose down -v
+then deploy again
+docker compose up --build 
+
+
+Test Strategy
+
+    High Level Directory structure
+    app/    contains all application code files agent,splitter and targets to run, each of these contains a Dockerfile for container build
+    html_report_pkg     used for github pages publish contain index.html that points to the report.html
+    ingestion_io    shared volume directory  agent,targets and test container share this volume
+    ingestion_io/input_files     contains all test input files used in test set, visible to agent and test container
+    ingestion_io/output_split_data  this is what is updated as each target recieves split file data as it is mapped their container event.log, the test container empties the event.logs at the beginning 
+    of each test and targets write new file data
+    ingestion_io/input_monitor_file_path.json       updated by tests to spe
+    test_artifacts/   all test artifacts for tests run
+    tests/  Dockerfile for test container and 
+    docker-compose.yml
+
+
+test cases 
+gh actions 
+   The agent application sends one specified file at a time upon node ./app.js ./ , in order to run multiple test scenarios in a test run this
+test harness is setup to drive the agent app by updating the input file configuration that the agent app reads from ./app/agent/inputs.json.  This
+is done from the test container by updating the input_monitor_file_path.json file stored on the shared docker volume 
+
+
+Test Artifacts
+
+After executing a local run
+/splitter/test_artifacts will contain a timestamped directory for each run, within this directory 
+- the event.log file for each target host can be found named according to the target host number and the initial input test file
+used 
+- report.html : html test report of last run
+![img.png](img.png)
+- 
+Test Report of Latest Run CI against  Master can be found at:
+Also in the bottom summary section of each gh action test workflow
+- Test Summary of the amount of tests that passed and failed , this will also out
+- run you can find a downloadable zipped copy of the test_artifacts directory described above as well 
+- report.html downloadable artifact
+![img_1.png](img_1.png)
+
+Test Logging Output
+- shows byte count validations
+- progress of processing from monitoring shared volume between target hosts and test container for event.log updates to complet
+As explained in the test strategy section data for each file is validated by counting the number of occurrences of each byte value, the logs will
+show the byte value count of the original input file and the sum of the byte value counts from the target host event.logs
+
+So for the example below:  the byte value 101 ASCII 'e' has the correct t_count (total count) of 'e' since t_count=t1_count +t2_count==in_file_count
+ Byte 101 (e): in_file_count=3000000, t1_count=1481523, t2_count=1518477, t_count=3000000 
+![img_2.png](img_2.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  ```bash
+  docker --version
+  
+
+
+
+
 docker
 docker compose
 
@@ -11,6 +141,9 @@ Build and Deploy Splitter App and Tests
 
 Run Tests
 
+
+Input
+Output
 Git Action Workflows
 Test Report
 Stored artifacts
@@ -35,19 +168,4 @@ Troubleshooting
 (volumes)
 File Structure
 Shared Mount
-Explanation of File 
-`   root:file_processing_utils.py:17 Processing input file test_three_line_small_file.txt
-INFO     root:file_processing_utils.py:27 
-Input file test_three_line_small_file.txt has been written to /ingestion_io/input_monitor_file_path.json
-INFO     root:file_processing_utils.py:40 b"My hostname is: 8138dcbd6cdf\nWorking as agent\ntcp= { host: 'splitter', port: 9997 }\nmonitored_filename= /app/agent/inputs/test_three_line_small_file.txt\nConnecting to  { host: 'splitter', port: 9997 }\nconnected to target { host: 'splitter', port: 9997 }\n"
-INFO     root:file_processing_utils.py:41 None
-INFO     root:file_processing_utils.py:68 Waiting for 5 seconds for splitter process to finish on target host 1 retry 1/20 
-INFO     root:file_processing_utils.py:82 Waiting for 5 seconds for splitter process to finish on target host 2 retry 0/2 
-INFO     root:file_processing_utils.py:133 Byte 10 (\n): input_file_char_count=2, target_files_char_count=2, 
-INFO     root:file_processing_utils.py:133 Byte 32 ( ): input_file_char_count=10, target_files_char_count=10, 
-INFO     root:file_processing_utils.py:133 Byte 73 (I): input_file_char_count=1, target_files_char_count=1, 
-INFO     root:file_processing_utils.py:133 Byte 87 (W): input_file_char_count=1, target_files_char_count=1, 
-INFO     root:file_processing_utils.py:133 Byte 97 (a): input_file_char_count=4, target_files_char_count=4, 
-INFO     root:file_processing_utils.py:133 Byte 100 (d): input_file_char_count=1, target_files_char_count=1, 
-...
-`
+E

@@ -12,7 +12,7 @@ from file_processing_utils import process_input_files, check_target_host_file_by
 @pytest.fixture(scope="function", autouse=True)
 def empty_existing_target_files():
     """
-    Delete existing output event logs on
+    Delete existing output event logs on shared volume
     """
     if os.path.exists(TARGET_HOST_1_PATH):
         logging.info(f"Found Target host file emptying file before test run at {TARGET_HOST_1_PATH}")
