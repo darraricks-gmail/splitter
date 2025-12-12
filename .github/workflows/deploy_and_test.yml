@@ -32,18 +32,28 @@ jobs:
 
       - name: Run Splitter Tests
         run:  docker compose exec tests pytest -v
+
+      - name: Save Test Artifacts
+        uses: actions/upload-artifact@4.3.1
+        with:
+          name: test_artifacts
+          path: test_artifacts
+          
+      - name: Test Summary
+        uses: test-summary/action@v2.3
+        with:
+          paths: test_artifacts/test_results.xml
+      
       - name: Create Report bundle
         run: |
             ls test_artifacts
             pwd
             cp test_artifacts/report.html html_report_pkg
-    
       - name: Upload Test Report HTML
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4.0.0
         with:
           name: test-report
           path: html_report_pkg
-
     
   deploy_report:
     environment:
@@ -55,7 +65,7 @@ jobs:
     
       - name: Deploy to GitHub Pages
         id: deploy_page
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v4.0.5
 
       # - name: Get Historical Allure Reports
       #   uses: actions/checkout@4.1.7
