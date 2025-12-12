@@ -34,9 +34,9 @@ jobs:
         run:  docker compose exec tests pytest -v
       - name: Create Report bundle
         run: |
-            ls
+            ls test_artifacts
             pwd
-            cp /test_artifacts/report.html html_report_pkg
+            cp test_artifacts/report.html html_report_pkg
     
       - name: Upload Test Report HTML
         uses: actions/upload-pages-artifact@v3
