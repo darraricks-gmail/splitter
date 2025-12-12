@@ -1,21 +1,15 @@
-
-Prerequisites
-
-
-
-
-
 This repo contains a test setup to verify data is processed sufficiently via the following application
 
-1.Agent - Reads from a specified file and forwards the contents to a ‘Splitter’
-2. Splitter - Receives data from an ‘Agent’ and randomly splits the data
-between the two configured ‘Target’ hosts
-3. Target - Receives data from a ‘Splitter’ and writes it to a file on disk
+Agent: Reads from a specified file and forwards the contents to a ‘Splitter’
+
+Splitter: - Receives data from an ‘Agent’ and randomly splits the data between the two configured ‘Target’ hosts
+
+Target: Receives data from a ‘Splitter’ and writes it to a file on disk
 
 The application will be hosted in docker each service Agent, Splitter and 2 Targets run in an individual docker container.  A test
 container will also be deployed with the application
 
-Project Highlights:
+## Project Highlights:  
 -  Agent is driven test harness using a volume that is shared across application containers to iterate through any set of data scenarios given a file set
 (include file structure explanation)
 - Each test case is associated with specific data file covering a different expectation
@@ -65,72 +59,49 @@ docker compose up --build
 
 Test Strategy
 
-**High Level Directory Structure**
+# High Level Directory structure
 
-**app/**    contains all application code files agent,splitter and targets to run, each of these contains a Dockerfile for container build
-html_report_pkg     used for github pages publish contain index.html that points to the report.html
-**ingestion_io**    shared volume directory  agent,targets and test container share this volume
-**ingestion_io/input_files**     contains all test input files used in test set, visible to agent and test container
-**ingestion_io/output_split_data**  this is what is updated as each target recieves split file data as it is mapped their container event.log, the test container empties the event.logs at the beginning 
-of each test and targets write new file data
-**ingestion_io/input_monitor_file_path.json**       updated by tests to specify which file agent will read and send to splitter
-**test_artifacts/**   all test artifacts for tests run
-**tests/**  Dockerfile for test container and all related test code
-docker-compose.yml
+- app/ :   contains all application code files agent,splitter and targets to run, each of these contains a Dockerfile for container build
 
+- html_report_pkg:   used for github pages publish contain index.html that points to the report.html
+
+- ingestion_io:    shared volume directory  agent,targets and test container share this volume
+
+- ingestion_io/input_files:     contains all test input files used in test set, visible to agent and test container
+
+- ingestion_io/output_split_data:  this is what is updated as each target recieves split file data as it is mapped their container event.log, the test container empties the event.logs at the beginning of each test and targets write new file data
+
+- ingestion_io/input_monitor_file_path.json:       updated by tests to spe
+
+- test_artifacts/   all test artifacts for tests run
+
+- tests/ :  Dockerfile for test container and 
+
+- docker-compose.yml
 
    The agent application sends one specified file at a time upon node ./app.js ./ , in order to run multiple test scenarios in a test run this
-test harness is setup to drive the agent app 
-   1. updating the input file configuration that the agent app reads from ./app/agent/inputs.json.  This is done from the test container by updating the input_monitor_file_path.json file stored on the shared docker volume 
-   2. runs the node command for the agent to initialized file processing, this is done by binding the test containers docker daemon socket to the host docker daemon
+test harness is setup to drive the agent app by updating the input file configuration the agent app reads from ./app/agent/inputs.json.  This
+is done from the test container by updating the input_monitor_file_path.json file stored on the shared docker volume 
+
+ Test Setup Steps:
+   1. Update the input file configuration that the agent app reads from ./app/agent/inputs.json.  This is done from the test container by updating the input_monitor_file_path.json file stored on the shared docker volume 
+   2. Run the node command for the agent to initialize file processing, this is done by binding the test containers docker daemon socket to the host docker daemon
    3. monitors shared volume ingestion_io/output_split_data/target*/event.log files until data is no longer being added to them
-4. 
+   4. Next step is verify the data within event logs this is explained in the following Test Cases section
 
 
-Test Strategy
-High Level Directory Structure
-
-app/
-contains all application code files agent, splitter and targets to run, each of these contains a Dockerfile for container build
-
-html_report_pkg
-used for github pages publish contain index.html that points to the report.html
-
-ingestion_io
-shared volume directory agent, targets and test container share this volume
-
-ingestion_io/input_files
-contains all test input files used in test set, visible to agent and test container
-
-ingestion_io/output_split_data
-this is what is updated as each target receives split file data as it is mapped their container event.log, the test container empties the event.logs at the beginning of each test and targets write new file data
-
-ingestion_io/input_monitor_file_path.json
-updated by tests to specify which file agent will read and send to splitter
-
-test_artifacts/
-all test artifacts for tests run
-
-tests/
-Dockerfile for test container and all related test code
-
-docker-compose.yml
-
-
-Test Set
-
+#  Test Cases
+    
     Verify file is processed correctly by verifying the counts of each byte value in the file then compare the count of these
     same byte values on target host files. The sum of the counts of each byte value in the target host files should equal the totals in the original
     input file.
 
-    Input File Test Purpose
     "test_random_char_lines.txt": Contains lines of random lengths and a wide variety of characters.
      captures data loss  since the distribution of each byte value should be highly varied and unique
 
     "large_1M_events.log": verifies application can process large files without timeouts, performances issues or data loass
     "test_empty_file": verifies application can process empty files without errors or crashing
     "test_image.jpg,png,pdf": verifies application can process binary without data loss and application errors
-
 
 
 
@@ -165,56 +136,3 @@ So for the example below:  the byte value 101 ASCII 'e' has the correct t_count 
 
 
 
-
-
-
-
-
-
-
-
-  ```bash
-  docker --version
-  
-
-
-
-
-docker
-docker compose
-
-docker --version
-docker compose version
-
-Build and Deploy Splitter App and Tests
-
-Run Tests
-
-
-Input
-Output
-Git Action Workflows
-Test Report
-Stored artifacts
-Teardown application
-Approach
-(test cases )
-    """
-    Verify file is processed correctly by verifying the counts of each byte value in the file then compare the count of these
-    same byte values on target host files. The sum of the counts of each byte value in the target host files should equal the totals in the original
-    input file.
-
-    "test_random_char_lines.txt": Contains lines of random lengths and a wide variety of characters.
-     captures data loss  since the distribution of each byte value should be highly varied and unique
-
-    "large_1M_events.log": verifies application can process large files without timeouts, performances issues or data loass
-    "test_empty_file": verifies application can process empty files without errors or crashing
-    "test_image.jpg,png,pdf": verifies application can process binary without data loss and application errors
-    """
-agent execution
-
-Troubleshooting
-(volumes)
-File Structure
-Shared Mount
-E
