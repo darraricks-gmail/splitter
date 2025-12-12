@@ -1,3 +1,5 @@
+
+## Purpose
 This repo contains a test setup to verify data is processed sufficiently via the following application
 
 Agent: Reads from a specified file and forwards the contents to a ‘Splitter’
@@ -10,35 +12,39 @@ The application will be hosted in docker each service Agent, Splitter and 2 Targ
 container will also be deployed with the application
 
 ## Project Highlights:  
--  Agent is driven test harness using a volume that is shared across application containers to iterate through any set of data scenarios given a file set
+-  Agent is driven test harness using a volume shared across application containers to iterate through any set of data scenarios in a set of files
 (include file structure explanation)
-- Each test case is associated with specific data file covering a different expectation
-- CI: GH Actions Pull Request Check Test automatically run upon changes to main branch to ensure 
-- Target Host Artifacts timestamped and stored for reference of test run (locally, gh actons)
-- shows bytes character counts compared in test verification in file 
-- Published test report to GH pages after each run triggered by a change to main branch
+- Each test case is associated with a specific data file covering a different expectation
+- CI: Deploy and Test Github Action workflow automatically triggers and deploys application and tests, trigged by pushes to main branch and also uses test results to   gate pull requests to main branch  
+- Target Host output event.log artifacts are timestamped and stored for reference for each test run)
+- Test logs show bytes character counts used in test verification
+- Published test report after each Deploy and Test workflow run triggered by a change to main branch only at: https://darraricks-gmail.github.io/splitter/
 
 
 ## Prerequisites 
 
-To run this project locally, ensure docker and docker compose are installed on your machine to build and deploy application
+To run this project locally, ensure 'docker' and 'docker compose; are installed on your machine to build and deploy application
 containers 
 
-To verify docker installation: 
-docker --version
-To verify docker compose installation: 
-docker compose version
+**To verify docker installation:**
+   
+   docker --version
+   
+**To verify docker compose installation:** 
 
-If you find that docker is not installed you can download an installation file for Docker Desktop here https://www.docker.com/products/docker-desktop/
+  docker compose version
+
+If you find docker is not installed you can download an installation file for Docker Desktop: https://www.docker.com/products/docker-desktop/
+
+
 Once installed , repeat the verification steps
 
 
-Deploying Application and Test Containers
-Verify that the Docker daemon has started.  To do this either make sure your Docker Desktop app is launched
+## Deploying Application and Test Containers
 
-Once you have docker running:
-To Build and Deploy Splitter App and Test container run:
-At the root of the project directory run, you will see a docker-compose.yml file in this directory run:
+Verify the Docker daemon has started.  To do this make sure your Docker Desktop application is launch
+
+Once you have docker running, at the root of the project directory run, you will see a docker-compose.yml file in this directory run:
 docker compose up --build -d
 
 To Run Test Suite: 
@@ -57,9 +63,9 @@ then deploy again
 docker compose up --build 
 
 
-Test Strategy
+# Test Strategy
 
-# High Level Directory structure
+**High Level Directory Structure**
 
 - app/ :   contains all application code files agent,splitter and targets to run, each of these contains a Dockerfile for container build
 
