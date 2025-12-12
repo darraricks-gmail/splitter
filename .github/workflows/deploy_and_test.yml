@@ -34,16 +34,19 @@ jobs:
         run:  docker compose exec tests pytest -v
 
       - name: Save Test Artifacts
-        uses: actions/upload-artifact@4.3.1
+        uses: actions/upload-artifact@v4.3.1
         with:
           name: test_artifacts
           path: test_artifacts
+        continue-on-error: true
+
           
       - name: Test Summary
         uses: test-summary/action@v2.3
         with:
           paths: test_artifacts/test_results.xml
-      
+        continue-on-error: true
+
       - name: Create Report bundle
         run: |
             ls test_artifacts
@@ -54,6 +57,7 @@ jobs:
         with:
           name: test-report
           path: html_report_pkg
+        continue-on-error: true
     
   deploy_report:
     environment:
