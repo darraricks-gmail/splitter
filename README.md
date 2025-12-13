@@ -80,7 +80,7 @@ docker compose down -v
 
 then deploy again
 
-docker compose up --build 
+docker compose up --build -d
 
 
 ## Test Strategy
