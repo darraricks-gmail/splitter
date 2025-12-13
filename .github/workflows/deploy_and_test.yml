@@ -48,7 +48,7 @@ jobs:
   deploy_report:
     needs: deploy_test
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment:
       name: test-report
       url: ${{ steps.deploy_page.outputs.page_url }}
