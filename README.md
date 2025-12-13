@@ -1,6 +1,6 @@
 
 ## Purpose
-   This repo contains a test setup to verify file input data is processed sufficiently via the following application
+   This repo contains a test setup that verifies file input data is processed sufficiently via the following application
 
    **Agent:** Reads from a specified file and forwards the contents to a ‘Splitter’
 
