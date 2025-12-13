@@ -21,7 +21,7 @@
   
 -  A "Deploy and Test" Github Action workflow automatically triggers and deploys the application and tests it.  This workflow is triggered by any push to the main branch and also uses the test result outcome to gate pull requests to main branch
   
-- Target host output event.log artifacts are timestamped and stored for reference to each test run
+- Target host output events.log artifacts are timestamped and stored for reference to each test run
   
 - Test logs show bytes character counts used in test verification
   
@@ -91,28 +91,28 @@ docker compose up --build -d
 
 - html_report_pkg:   used for github pages publish, it contains index.html that points to the report.html
 
-- ingestion_io:    shared volume directory the agent,targets and test container share
+- ingestion_io:    io volume directory the agent, targets and test containers share
 
-- ingestion_io/input_files:     contains all test input files used in test set, visible to agent and test container
+- ingestion_io/input_files:     contains all test input files used in test set it is visible to agent and test container
 
-- ingestion_io/output_split_data:  updated as each target receives split file data, it is mapped to each target's container event.log, the test container empties the event.logs at the beginning of each test and the targets write new file data
+- ingestion_io/output_split_data:  updated as each target receives split file data, it is mapped to each target's container events.log, the test container empties the events.logs at the beginning of each test and the targets write new file data
 
-- ingestion_io/input_monitor_file_path.json:  updated by tests to specify the input file that the agent reads from
+- ingestion_io/input_monitor_file_path.json:  updated by tests to specify the input file the agent reads from
 
 - test_artifacts/   all test artifacts for tests run
 
-- tests/ :  Dockerfile for test container and all related pytest code
+- tests/ :  Dockerfile for test container and all related python test code and configuration files
 
 - docker-compose.yml
 
    The agent application sends only one specified file at a time each time node ./app.js ./ is executed. In order to run multiple test scenarios in a test run the
-test harness is setup to drive the agent application by updating the input file configuration the agent app reads (./app/agent/inputs.json).
+test harness is setup to drive the agent application by updating the input file configuration the agent app reads from(./app/agent/inputs.json).
 This is done from the test container by updating the input_monitor_file_path.json file stored on the shared docker volume bound to the agents input.json file
 
  Test Setup steps:
-   1. Update the input file configuration  the agent app reads from ./app/agent/inputs.json.  This is done from the test container by updating the input_monitor_file_path.json file stored on the shared docker volume 
-   2. Run the node command for the agent to initialize file processing, this is done by binding the test containers docker daemon socket to the host docker daemon to send command directly in agent's container
-   3. Monitors shared volume ingestion_io/output_split_data/target*/event.log files until data is no longer being added to them
+   1. Update the input file configuration the agent app reads from ./app/agent/inputs.json.  This is done from the test container by updating the input_monitor_file_path.json file stored on the shared docker volume 
+   2. Run the node command for the agent to initialize file processing, this is done by binding the test container's docker daemon socket to the local machine host docker daemon to send the node command directly in agent's container
+   3. Monitors shared volume ingestion_io/output_split_data/target*/events.log files until data is no longer being added to logs
    4. Event log data verificaton ( explained in the following Test Cases section)
 
 
@@ -136,7 +136,7 @@ This is done from the test container by updating the input_monitor_file_path.jso
      
    4-7.  test_image.jpg,png,pdf": verifies application can process binary without data loss and application errors
    
-   8.    test_two_files_ingested_wo_clearing_eventslog:  validates  when data from more than one file is sent without clearing event.logs, data from each input file still is not lost or corrupted
+   8.    test_two_files_ingested_wo_clearing_eventslog:  validates  when data from more than one file is sent without clearing events.logs, data from each input file still is not lost or corrupted
 
 
 ## Test Artifacts
@@ -149,7 +149,7 @@ After executing a test run from your local machine a test artifact directory wil
 
 /splitter/test_artifacts will contain a timestamped directory for each test run containing:
 
-   - a event.log file for each target host can be found named according to the target host # and the input test file
+   - a events.log file for each target host can be found named according to the target host # and the input test file
      used 
 
   - an html test report of last run
@@ -168,10 +168,10 @@ Also at the bottom summary section of each github action test workflow run is a:
 
 ## Test Logging Output
 - Highlights byte count validations
-- Shows progress of file processing from monitoring shared volume between target hosts and test container, the tests wait for event.log updates to complete 
+- Shows progress of file processing from monitoring shared volume between target hosts and test container, the tests wait for events.log updates to complete 
   
 As explained in the test strategy section, data for each file is validated by counting the number of occurrences of each byte value, the logs will
-show the byte value count of the original input file and the sum of the byte value counts from the target host event.logs
+show the byte value count of the original input file and the sum of the byte value counts from the target host events.logs
 
 So in the example below the byte value 101 ASCII 'e' has the correct t_count (total count) of 'e' since t_count=t1_count +t2_count==in_file_count
 
