@@ -9,7 +9,7 @@
    **Target:** Receives data from a ‘Splitter’ and writes it to a file on disk
 
    The application is deployed using docker. Each component the  Agent, Splitter and two Targets run in individual docker containers.  A test
-   container is also created and deployed with th application
+   container is also created and deployed with the application
 
 
 
