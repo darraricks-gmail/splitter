@@ -58,7 +58,7 @@ Once you have docker running go to the root of the project directory you will se
 
 docker compose exec tests pytest -v
 
-After the test run is complete you can retrieve the test artifacts in the /test_artifacts directory artifact
+After the test run is complete you can retrieve the test artifacts in the /test_artifacts directory
 
 
 
