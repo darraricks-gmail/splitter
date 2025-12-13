@@ -1,6 +1,6 @@
 
 ## Purpose
-   This repo contains a test setup to verify that file input data is processed sufficiently via the following application
+   This repo contains a test setup to verify file input data is processed sufficiently via the following application
 
    **Agent:** Reads from a specified file and forwards the contents to a ‘Splitter’
 
@@ -87,27 +87,27 @@ docker compose up --build
 
 **High Level Directory Structure**
 
-- app/ :   contains all application code files agent,splitter and targets to run, each of these contains a Dockerfile for container build
+- app/ :   contains all application code files that the agent, splitter and targets need to run, each of these component directories contain a Dockerfile for container build
 
-- html_report_pkg:   used for github pages publish contain index.html that points to the report.html
+- html_report_pkg:   used for github pages publish, it contains index.html that points to the report.html
 
-- ingestion_io:    shared volume directory  agent,targets and test container share this volume
+- ingestion_io:    shared volume directory the agent,targets and test container share
 
 - ingestion_io/input_files:     contains all test input files used in test set, visible to agent and test container
 
-- ingestion_io/output_split_data:  this is what is updated as each target recieves split file data as it is mapped their container event.log, the test container empties the event.logs at the beginning of each test and targets write new file data
+- ingestion_io/output_split_data:  updated as each target receives split file data, it is mapped to each target's container event.log, the test container empties the event.logs at the beginning of each test and the targets write new file data
 
-- ingestion_io/input_monitor_file_path.json:       updated by tests to spe
+- ingestion_io/input_monitor_file_path.json:  updated by tests to specify the input file that the agent reads from
 
 - test_artifacts/   all test artifacts for tests run
 
-- tests/ :  Dockerfile for test container and 
+- tests/ :  Dockerfile for test container and all related pytest code
 
 - docker-compose.yml
 
-   The agent application sends only one specified file at a time each time node ./app.js ./ is executed, in order to run multiple test scenarios in a test run this
-test harness is setup to drive the agent app by updating the input file configuration that the agent app reads from ./app/agent/inputs.json.
-This is done from the test container by updating the input_monitor_file_path.json file stored on the shared docker volume that is bound to the agents input.json file
+   The agent application sends only one specified file at a time each time node ./app.js ./ is executed. In order to run multiple test scenarios in a test run the
+test harness is setup to drive the agent application by updating the input file configuration the agent app reads (./app/agent/inputs.json).
+This is done from the test container by updating the input_monitor_file_path.json file stored on the shared docker volume bound to the agents input.json file
 
  Test Setup steps:
    1. Update the input file configuration  the agent app reads from ./app/agent/inputs.json.  This is done from the test container by updating the input_monitor_file_path.json file stored on the shared docker volume 
@@ -136,7 +136,7 @@ This is done from the test container by updating the input_monitor_file_path.jso
      
    4-7.  test_image.jpg,png,pdf": verifies application can process binary without data loss and application errors
    
-   8.    test_multiple_input_files_processed:  validates  when data from more than on file is sent without clearing event.logs , data from each input file still is not lossed or corrupted
+   8.    test_multiple_input_files_processed:  validates  when data from more than one file is sent without clearing event.logs , data from each input file still is not lost or corrupted
 
 
 ## Test Artifacts
