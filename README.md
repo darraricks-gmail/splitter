@@ -19,7 +19,7 @@
 
 - Each test case is associated with a specific data scenario
   
--  A "Deploy and Test" Github Action workflow automatically triggers and deploys the application and tests it.  This workflow is triggered any push to the main branch and also uses the test result outcome to gate pull requests to main branch
+-  A "Deploy and Test" Github Action workflow automatically triggers and deploys the application and tests it.  This workflow is triggered by any push to the main branch and also uses the test result outcome to gate pull requests to main branch
   
 - Target host output event.log artifacts are timestamped and stored for reference to each test run
   
