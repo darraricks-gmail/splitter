@@ -63,7 +63,7 @@ def test_two_files_ingested_wo_clearing_eventslog(test_run_timestamp):
     # configure agent to use test input file_name, run agent app and wait for targets to have updated files
     process_input_files(test_file_path_1)
     #wait for processing to completely stop in docker before sending another file
-    time.sleep(10)
+    time.sleep(20)
     process_input_files(test_file_path_2)
 
     input_file_total_byte_ctr = (get_byte_counter(test_file_path_1) + get_byte_counter(test_file_path_2))
