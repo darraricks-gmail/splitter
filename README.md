@@ -9,7 +9,7 @@
    **Target:** Receives data from a ‘Splitter’ and writes it to a file on disk
 
    The application is deployed using docker. Each component the  Agent, Splitter and two Targets run in individual docker containers.  A test
-   container is also created and deployed along the application
+   container is also created and deployed with th application
 
 
 
@@ -17,15 +17,15 @@
 
 -  The application agent service is driven via the test harness using a volume shared between application containers.  This way the test harness can iterate through any set of data scenarios given a set of files and update the necessary configuration files used by the application containers
 
-- Each test case is associated with a specific data file covering a different expectation
+- Each test case is associated with a specific data scenario
   
--  A "Deploy and Test" Github Action workflow automatically triggers and deploys application and tests it is triggered by pushes to the main branch and also uses the test result outcome to gate pull requests to main branch
+-  A "Deploy and Test" Github Action workflow automatically triggers and deploys the application and tests it.  This workflow is triggered any push to the main branch and also uses the test result outcome to gate pull requests to main branch
   
-- Target host output event.log artifacts are timestamped and stored for reference in each test run
+- Target host output event.log artifacts are timestamped and stored for reference to each test run
   
 - Test logs show bytes character counts used in test verification
   
-- Published test report after each Deploy and Test workflow run triggered by a change to main branch only at: https://darraricks-gmail.github.io/splitter/
+- Published test report after each Deploy and Test workflow triggered by main branch changes only.  Report can be found at: https://darraricks-gmail.github.io/splitter/
 
 
 ## Prerequisites 
