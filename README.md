@@ -50,7 +50,7 @@ Once installed, repeat the verification steps
 
 Verify the Docker daemon has started.  To do this make sure your Docker Desktop application is launched
 
-Once you have docker running go to the root of the project directory you will see a docker-compose.yml file in this directory run:
+Once you have docker running go to the root of the project directory, you will see a docker-compose.yml file in this directory run:
 
   docker compose up --build -d
 
