@@ -87,7 +87,7 @@ docker compose up --build -d
 
 **High Level Directory Structure**
 
-- app/ :   contains all application code files that the agent, splitter and targets need to run, each of these component directories contain a Dockerfile for container build
+- app/ :   contains all application code files the agent, splitter and targets need to run, each of these component directories contain a Dockerfile for container build
 
 - html_report_pkg:   used for github pages publish, it contains index.html that points to the report.html
 
