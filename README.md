@@ -136,7 +136,7 @@ This is done from the test container by updating the input_monitor_file_path.jso
      
    4-7.  test_image.jpg,png,pdf": verifies application can process binary without data loss and application errors
    
-   8.    test_multiple_input_files_processed:  validates  when data from more than one file is sent without clearing event.logs , data from each input file still is not lost or corrupted
+   8.    test_two_files_ingested_wo_clearing_eventslog:  validates  when data from more than one file is sent without clearing event.logs, data from each input file still is not lost or corrupted
 
 
 ## Test Artifacts

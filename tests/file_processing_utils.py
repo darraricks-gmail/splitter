@@ -30,19 +30,19 @@ def process_input_files(test_file_name):
     else:
         Exception("Input file json spec does not exist please add input file spec")
 
-    #create docker client to run app.js on agent container
+    # create docker client to run app.js on agent container
     docker_client = docker.from_env()
     if not docker_client.containers.get("splitter-agent-1"):
-            Exception("Docker container has splitter-agent-1 not been created")
+        Exception("Docker container has splitter-agent-1 not been created")
     agent_container = docker_client.containers.get("splitter-agent-1")
     response = agent_container.exec_run("node /agent/app.js /agent", demux=True)
     std_out, std_err = response.output
     logging.info(std_out)
-    if std_err :
+    if std_err:
         raise Exception(std_err)
     if response.exit_code != 0:
-            raise Exception(
-                f"\nFailed to start agent app.js to process {test_file_name} failed with exit code {std_out} \n {std_err}\n")
+        raise Exception(
+            f"\nFailed to start agent app.js to process {test_file_name} failed with exit code {std_out} \n {std_err}\n")
 
     wait_until_splitter_is_done_processing()
 
@@ -67,7 +67,7 @@ def wait_until_splitter_is_done_processing():
             prev_size = current_size
             time.sleep(wait_time_seconds)
             logging.info(
-                f"Waiting for {wait_time_seconds} seconds for splitter process to finish on target host 1 retry {retry+1}/{retries} ")
+                f"Waiting for {wait_time_seconds} seconds for splitter process to finish on target host 1 retry {retry + 1}/{retries} ")
     else:
         Exception("Target host files does not exist before test run, add input file spec and run agent first")
     # Only perform 2 retries when waiting for Target Host file 2 the assumption is that if target host 1 is has all of its data target host will soon have all its data too
@@ -81,10 +81,20 @@ def wait_until_splitter_is_done_processing():
         prev_size = current_size
         time.sleep(wait_time_seconds)
         logging.info(
-            f"Waiting for {wait_time_seconds} seconds for splitter process to finish on target host 2 retry {retry+1}/{retries} ")
+            f"Waiting for {wait_time_seconds} seconds for splitter process to finish on target host 2 retry {retry + 1}/{retries} ")
 
     if not target_file_1_done and target_file_2_done:
         Exception("Timed out waiting for splitter process to finish")
+
+
+def get_byte_counter(input_file_path):
+    input_new_line_count = Counter()
+
+    with open(input_file_path, "rb") as f:
+        for chunk in iter(lambda: f.read(CHUNK_SIZE), b""):
+            input_new_line_count.update(chunk)
+
+    return input_new_line_count
 
 
 def check_target_host_file_bytes(input_file_path):
@@ -93,28 +103,21 @@ def check_target_host_file_bytes(input_file_path):
     :param input_file_path: string file path of input file agent
     """
 
-    input_new_line_count = Counter()
-    with open(input_file_path, "rb") as f:
-        for chunk in iter(lambda: f.read(CHUNK_SIZE), b""):
-            input_new_line_count.update(chunk)
-    target_1_new_line_count = Counter()
-    with open(TARGET_HOST_1_PATH, "rb") as f:
-        for chunk in iter(lambda: f.read(CHUNK_SIZE), b""):
-            target_1_new_line_count.update(chunk)
-    target_2_new_line_count = Counter()
-    with open(TARGET_HOST_2_PATH, "rb") as f:
-        for chunk in iter(lambda: f.read(CHUNK_SIZE), b""):
-            target_2_new_line_count.update(chunk)
-    show_character_differences(input_new_line_count, target_1_new_line_count,target_2_new_line_count)
+    input_new_line_count = get_byte_counter(input_file_path)
+    target_1_new_line_count = get_byte_counter(TARGET_HOST_1_PATH)
+    target_2_new_line_count = get_byte_counter(TARGET_HOST_2_PATH)
+
+    show_character_differences(input_new_line_count, target_1_new_line_count, target_2_new_line_count)
 
     assert input_new_line_count == (
-                target_1_new_line_count + target_2_new_line_count), "Data corrupted during splitting, bytes mismatch between input and target host files"
+            target_1_new_line_count + target_2_new_line_count), "Data corrupted during splitting, bytes mismatch between input and target host files"
 
-def show_character_differences(input_file_byte_counts, target_1_byte_counts,target_2_byte_counts):
+
+def show_character_differences(input_file_byte_counts, target_1_byte_counts, target_2_byte_counts):
     """
     Show the differences between number of each character in input file versus target file byte counts.
     """
-    bytes = set(input_file_byte_counts.keys()) | set(target_1_byte_counts.keys())|set(target_2_byte_counts.keys())
+    bytes = set(input_file_byte_counts.keys()) | set(target_1_byte_counts.keys()) | set(target_2_byte_counts.keys())
     logging.info("\n")
     for byte in sorted(bytes):
         input_file_byte_count = input_file_byte_counts.get(byte, 0)
@@ -122,7 +125,7 @@ def show_character_differences(input_file_byte_counts, target_1_byte_counts,targ
         target_2_count = target_2_byte_counts.get(byte, 0)
         total_target_bytes = (target_1_byte_counts + target_2_byte_counts).get(byte, 0)
 
-        if 32 <= byte <= 126: #actual printable ascii range
+        if 32 <= byte <= 126:  # actual printable ascii range
             ascii_repr = chr(byte)
         elif byte == 10:
             ascii_repr = r"\n"
