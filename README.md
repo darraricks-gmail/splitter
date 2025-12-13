@@ -1,6 +1,6 @@
 
 ## Purpose
-   This repo contains a test setup to verify data is processed sufficiently via the following application
+   This repo contains a test setup to verify that file input data is processed sufficiently via the following application
 
    **Agent:** Reads from a specified file and forwards the contents to a ‘Splitter’
 
@@ -8,17 +8,20 @@
 
    **Target:** Receives data from a ‘Splitter’ and writes it to a file on disk
 
-   The application is deployed using docker. Each component the  Agent, Splitter and 2 Targets run in individual docker containers.  A test
-   container is also created and deployed with the application
+   The application is deployed using docker. Each component the  Agent, Splitter and two Targets run in individual docker containers.  A test
+   container is also created and deployed along the application
+
+
 
 ## Project Highlights  
--  The application agent serice is driven via the test harness by using a volume shared between application containers.  This way the test harness can iterate through   any set of data scenarios given a set of files
+
+-  The application agent service is driven via the test harness using a volume shared between application containers.  This way the test harness can iterate through any set of data scenarios given a set of files and update the necessary configuration files used by the application containers
 
 - Each test case is associated with a specific data file covering a different expectation
   
-- CI: Deploy and Test Github Action workflow automatically triggers and deploys application and tests, trigged by pushes to main branch and also uses test results to   gate pull requests to main branch
+-  A "Deploy and Test" Github Action workflow automatically triggers and deploys application and tests it is triggered by pushes to the main branch and also uses the test result outcome to gate pull requests to main branch
   
-- Target Host output event.log artifacts are timestamped and stored for reference for each test run)
+- Target host output event.log artifacts are timestamped and stored for reference in each test run
   
 - Test logs show bytes character counts used in test verification
   
@@ -27,7 +30,7 @@
 
 ## Prerequisites 
 
-To run this project locally, ensure 'docker' and 'docker compose are installed on your machine
+To run this project locally, ensure 'docker' and 'docker compose' are installed on your machine
 
 **To verify docker installation:**
    
@@ -40,7 +43,7 @@ To run this project locally, ensure 'docker' and 'docker compose are installed o
 If you find docker is not installed you can download an installation file for Docker Desktop: https://www.docker.com/products/docker-desktop/
 
 
-Once installed , repeat the verification steps
+Once installed, repeat the verification steps
 
 
 ## Deploying Application and Test Containers
@@ -55,21 +58,32 @@ Once you have docker running go to the root of the project directory you will se
 
 docker compose exec tests pytest -v
 
-After the test run is complete you can retrieve the test artifacts in the /test_artifacts directory artifact  
+After the test run is complete you can retrieve the test artifacts in the /test_artifacts directory artifact
+
+
 
 **Tear Down Application and Test Containers**
 
 docker compose down  
 
-Troubleshooting:
-On rare occasion after many docker builds and deploys you might start to see various file not found errors in the test logs if this starts to occur
+
+
+
+
+
+**Troubleshooting:**
+
+On occasion after many docker builds and deploys you might start to see various "file not found" errors in the test logs if this starts to occur
 consistently try tearing down the deployment container along with deleting the volumes as well, just remember all data associated with them will be wiped:
+
 docker compose down -v
+
 then deploy again
+
 docker compose up --build 
 
 
-# Test Strategy
+## Test Strategy
 
 **High Level Directory Structure**
 
@@ -91,52 +105,70 @@ docker compose up --build
 
 - docker-compose.yml
 
-   The agent application sends one specified file at a time upon node ./app.js ./ , in order to run multiple test scenarios in a test run this
-test harness is setup to drive the agent app by updating the input file configuration the agent app reads from ./app/agent/inputs.json.  This
-is done from the test container by updating the input_monitor_file_path.json file stored on the shared docker volume 
+   The agent application sends only one specified file at a time each time node ./app.js ./ is executed, in order to run multiple test scenarios in a test run this
+test harness is setup to drive the agent app by updating the input file configuration that the agent app reads from ./app/agent/inputs.json.
+This is done from the test container by updating the input_monitor_file_path.json file stored on the shared docker volume that is bound to the agents input.json file
 
- Test Setup Steps:
-   1. Update the input file configuration that the agent app reads from ./app/agent/inputs.json.  This is done from the test container by updating the input_monitor_file_path.json file stored on the shared docker volume 
-   2. Run the node command for the agent to initialize file processing, this is done by binding the test containers docker daemon socket to the host docker daemon
-   3. monitors shared volume ingestion_io/output_split_data/target*/event.log files until data is no longer being added to them
-   4. Next step is tp verify the data within event.logs this is explained in the following Test Cases section
+ Test Setup steps:
+   1. Update the input file configuration  the agent app reads from ./app/agent/inputs.json.  This is done from the test container by updating the input_monitor_file_path.json file stored on the shared docker volume 
+   2. Run the node command for the agent to initialize file processing, this is done by binding the test containers docker daemon socket to the host docker daemon to send command directly in agent's container
+   3. Monitors shared volume ingestion_io/output_split_data/target*/event.log files until data is no longer being added to them
+   4. Event log data verificaton ( explained in the following Test Cases section)
 
 
 ## Test Cases
-Verfication:  
+
+
+**Verfication:  **
+
    Verify each test case file is processed correctly by capturing the counts of each byte value in the test input file then comparing that count to the 
    same byte values on target host files. The sum of the counts of each byte value in the target host files should equal the totals in the original
    input file
 
- Test Case Set:
+ **Test Case Set:**
+ 
    1.    test_random_char_lines.txt: Contains lines of random lengths and a wide variety of characters.
          captures data loss  since the distribution of each byte value should be highly varied and unique
 
-   2.    large_1M_events.log: verifies application can process large files without timeouts, performances issues or data loass
+   2.    large_1M_events.log: verifies application can process large files without timeouts, performances issues or data loss
+     
    3.    test_empty_file: verifies application can process empty files without errors or crashing
+     
    4-7.  test_image.jpg,png,pdf": verifies application can process binary without data loss and application errors
-   8.    test_multiple_input_files_ingested:  validates that when data from more than on file is sent without clearing event.logs , data from each input 
+   
+   8.    test_multiple_input_files_processed:  validates  when data from more than on file is sent without clearing event.logs , data from each input file still is not lossed or corrupted
 
 
 ## Test Artifacts
 
-After executing a local run
-/splitter/test_artifacts will contain a timestamped directory for each run, within this directory 
-- the event.log file for each target host can be found named according to the target host number and the initial input test file
-used 
-- report.html : html test report of last run
+After executing a test run from your local machine a test artifact directory will be created
+
+
 ![img.png](img.png)
-- 
-Test Report of Latest Run CI against  Master can be found at:
-Also in the bottom summary section of each gh action test workflow
-- Test Summary of the amount of tests that passed and failed , this will also out
-- run you can find a downloadable zipped copy of the test_artifacts directory described above as well 
+
+
+/splitter/test_artifacts will contain a timestamped directory for each test run containing:
+
+   - a event.log file for each target host can be found named according to the target host # and the input test file
+     used 
+
+  - an html test report of last run
+
+  
+Test Report of latest Github action Deploy and Test can be found at: https://darraricks-gmail.github.io/splitter/
+
+Also at the bottom summary section of each github action test workflow run is a:
+
+- test summary of the amount of tests that passed and failed
+- downloadable zipped copy of the test_artifacts directory described above
 - report.html downloadable artifact
+
+  
 ![img_1.png](img_1.png)
 
 ## Test Logging Output
 - Highlights byte count validations
-- Progress of file processing from monitoring shared volume between target hosts and test container, the tests wait for event.log updates to complete 
+- Shows progress of file processing from monitoring shared volume between target hosts and test container, the tests wait for event.log updates to complete 
   
 As explained in the test strategy section, data for each file is validated by counting the number of occurrences of each byte value, the logs will
 show the byte value count of the original input file and the sum of the byte value counts from the target host event.logs
