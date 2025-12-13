@@ -7,7 +7,7 @@ import pytest
 
 from constants import TARGET_HOST_1_PATH, TARGET_HOST_2_PATH, INPUT_FILE_DIR, ARTIFACTS_DIR
 from file_processing_utils import process_input_files, check_target_host_file_bytes
-from tests.file_processing_utils import get_byte_counter
+from file_processing_utils import get_byte_counter
 
 
 @pytest.fixture(scope="function", autouse=True)
