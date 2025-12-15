@@ -84,6 +84,16 @@ docker compose up --build -d
 
 
 ## Test Strategy
+There are several assumptions made about how this application is supposed to work as the requirements provided in the prompt are unclear. Data correctness is supposed to be validated but "correctness" is ambiguous ecspecially since the take home prompt also states the data is intentionally "randomly" split between targets.  In a real life scenario the following questions would need to be answered for requirement clarification:
+
+ - Is the application supposed to process only text files formatted line by line?
+ - Does strict order matter being that the data is split randomly?
+ - Is this application only a text logging application or a general data processing application?
+   
+As the application code is written the splitter reads bytes recieved from the agent in arbitrary data chunk sizes then splits at the first \n if one exists.  In the case of a text file with the structure similar to the large_1M_events.log file this results in the lines being split in random ways across targets. Whether this is a bug or not is dependent upon the answers to the questions above.
+
+Based on the requirements given it is assumed the data is split "randomly" and "correctness" is assumed to mean no data bytes are lost during this processing.  It is also assumed that any type of data file should be correctly processed since the word "data" is used in the requirements instead of "text".
+
 
 **High Level Directory Structure**
 
