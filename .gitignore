@@ -1,5 +1,2 @@
-test_artifacts/*
-#keep this placeholder file
-!test_artifacts/.gitkeep
+test_artifacts
 ingestion_io
-!ingestion_io/.gitkeep
